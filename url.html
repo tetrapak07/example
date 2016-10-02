@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Check Url</title>
+
+        <link href='//fonts.googleapis.com/css?family=Lato:100' rel='stylesheet' type='text/css'>
+        <!-- Latest compiled and minified CSS -->
+
+        <script   src="https://code.jquery.com/jquery-3.1.1.min.js"   integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="   crossorigin="anonymous"></script>
+
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+        <!-- Optional theme -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+        <!-- Latest compiled and minified JavaScript -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+        <script>
+           
+           /**
+            * Check is url valid 
+            * 
+            * @param {Srting} url   
+            * @return {boolean}
+            */   
+           function isUrlValid(url) {
+                    return /^(https?|s?ftp):\/\/(((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:)*@)?(((\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?)(:\d*)?)(\/((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)+(\/(([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)*)*)?)?(\?((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|[\uE000-\uF8FF]|\/|\?)*)?(#((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|\/|\?)*)?$/i.test(url);
+           }
+            
+            /**
+            * Hide preloader
+            *  
+            * @return {void}
+            */  
+            function hidePreloader() {
+                $('#preloader').hide();
+                $('#preloader').addClass('hide');
+            }
+            
+            /**
+            * Hide all errors in modal window
+            *  
+            * @return {void}
+            */
+            function hideAllErrors() {
+                $('.alert').addClass('hide');
+                    $('.alert').hide();
+                    $('#noUrl').text('Url is empty!');
+                    $('#errorUrl').text('Wrong Url! (Right format: "http(s)://example.com")');
+                    $('#urlAnswer').text('Url (server) answer: 200 OK.');
+                    $('#urlAnswerNotOk').text('Url (server) answer:');
+            };
+            
+            /**
+            * Send GET request to url
+            * 
+            * @param {Srting} url 
+            * @return {boolean}
+            */
+            function sendRequest(url) {
+                
+                $('#preloader').removeClass('hide');
+                $('#preloader').show();
+                $.ajax({
+                    type: "GET",
+                            url:url,
+                            dataType: 'jsonp',
+                            processData: true,
+                           
+                            headers: {
+                            "Access-Control-Allow-Origin": "*",
+                                    "Access-Control-Allow-Headers": "origin, content-type, accept"
+                            },
+                            error: function(data) {
+                            //console.log(data.status);
+                                    if (data.status == '200') { 
+                                     hideAllErrors();  
+                                     $('#urlAnswer').removeClass('hide');
+                                     $('#urlAnswer').show();
+                                     hidePreloader();
+                                     return true;
+                            } else {
+
+                                    hideAllErrors();  
+                                    $('#urlAnswerNotOk').text('The server is not available or does not exist!');
+                                    $('#urlAnswerNotOk').removeClass('hide');
+                                    $('#urlAnswerNotOk').show();
+                                    hidePreloader();
+                                    return false;
+                                    
+                            }
+                         }
+                    });
+               
+            }
+            
+           
+    $(document).ready(function () {
+                
+             $(document).on("mouseout keyup", "#url", function () {
+                  
+                   url = $('#url').val();
+                   //console.log('url: '+ url) ;
+                      if ((url != "") && (url != undefined)&& (isUrlValid(url))) {
+                         sendRequest(url); 
+                      }
+                      
+             });    
+
+            $(document).on("click", "#check", function () {
+                    
+                    url = $('#url').val();
+                    
+                    if ((url == "") || (url == undefined)) {
+                        hideAllErrors();  
+                        $('#noUrl').removeClass('hide');
+                        $('#noUrl').show();
+                        hidePreloader();
+                        return;
+                    }
+
+            if (! isUrlValid(url)) {
+                    hideAllErrors();  
+                    $('#errorUrl').removeClass('hide');
+                    $('#errorUrl').show();
+                    hidePreloader();
+                    return;
+            } 
+            return;
+            });
+            
+    });
+        </script>    
+
+    </head>
+    <body>
+        <div class="container">
+
+            <div class="content" style="margin-top: 100px">
+                <form>
+
+                    <div class="form-group">
+                        <label for="url">Url:</label>
+                        <input type="url" class="form-control" id="url" value="" placeholder="http(s)://example.com">
+                    </div>
+
+                    <a class="btn btn-default" id="check" data-toggle="modal" data-target="#result">Check</a>
+                </form>
+            </div>
+
+        </div>
+        
+        <div class="modal" id="result" tabindex="-1" role="dialog" aria-labelledby="result">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title">Result</h4>
+                    </div>
+
+                    <div class="modal-body">
+                        <img src="preload.gif" id="preloader" class="hide">
+                        <div class="alert alert-warning hide" role="alert" id="noUrl">
+                            Url is empty!
+                        </div>
+
+                        <div class="alert alert-danger hide" role="alert" id="errorUrl">
+                            Wrong Url! (Right format: "http(s)://example.com")
+                        </div>
+
+                        <div class="alert alert-success hide" role="alert" id="urlAnswer">
+                            Url (server) answer: 200 OK.
+                        </div>
+
+                        <div class="alert alert-danger hide" role="alert" id="urlAnswerNotOk">
+                            Url (server) answer:
+                        </div>
+
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </body>
+</html>
